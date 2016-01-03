@@ -14,7 +14,7 @@
 ## 安裝執行
 
  - 安裝 nodejs , 參考 https://nodejs.org/
- - git clone https://github.com/bencrox/pttcrawl
+ - git clone https://github.com/BeStronger1983/pttcrawl
  - npm install
  - 分析多頁文章： ./pttcrawl politics page 1
  - 分析單篇文章： ./pttcrawl politics article 1 
