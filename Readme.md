@@ -16,7 +16,8 @@
  - 安裝 nodejs , 參考 https://nodejs.org/
  - git clone https://github.com/bencrox/pttcrawl
  - npm install
- - ./pttcrawl politics 1
+ - 分析多頁文章： ./pttcrawl politics page 1
+ - 分析單篇文章： ./pttcrawl politics article 1 
  - politics 是看板名， 1 代表只取 1 頁，不要太貪心啊！
 
 ## 結果
