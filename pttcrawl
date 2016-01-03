@@ -12,6 +12,7 @@ tokenizor.load({dict:'./dict.txt'});
 
 var delay = 0;
 var board = arg[0] || 'politics';
+var crawltype = arg[1]; // page, article
 
 /* 導入部份，按參數 1 指定看板，從 index 知道最後一頁的頁數，這裹沒有做足夠的防誤。 */
 
@@ -28,7 +29,7 @@ request({url:target+board+'/',headers:req_headers},function(e,r,html){
 
  }else console.log(e,r.statusCode);
 
- var MaxPage = arg[1] || 10;
+ var MaxPage = arg[2] || 10;
  if(MaxPage > lastpage_no) MaxPage = lastpage;
  for(page=lastpage_no;page>lastpage_no-MaxPage;page--){
    get_links(page);
@@ -65,20 +66,29 @@ var get_links = function(page){
 
 
 var get_context = function(link){
+  
   request({url:target+link,headers:req_headers},function(e,r,html){
     if(!e && r.statusCode == 200){
-       var $ = cheerio.load(html);
-       var children = $('#main-content')[0].children;
-       for(child in children){
-        if(children[child].type != 'text') continue
-        var text = children[child].data.split('\n');
+      //console.log(target+link);
         var main_text = "";
-        for(t in text){
-          if (text[t] == "--") break;
-          main_text += text[t];
+        var $ = cheerio.load(html);
+        var children = $('#main-content')[0].children;
+        for(child in children){
+          if(children[child].type != 'text') continue
+          var text = children[child].data.split('\n');
+
+          for(t in text){
+            if (text[t] == "--") break;
+            main_text += text[t];
+          }
         }
-        analysis(main_text);
-       }
+
+        if(main_text){
+          console.log(target+link);
+          analysis(main_text);
+        }else{
+          console.log('notext'+target+link);
+        }
     }else console.log('pageError',e,r.statusCode,link);
   })
 }
@@ -88,17 +98,105 @@ var get_context = function(link){
 
 var analysis = function(text){
   result = tokenizor.tag(text);
-  merge(result);
+  if(crawltype=='page'){
+    merge(result);
+  }
+  else if(crawltype=='article'){
+    analysize_article(result);
+  }
 }
 
-/* 綜合分析 */
+/* 文章分析 */
+
+var analysize_article = function(article){
+  var article_noun= {};
+  var article_pos_adj= {};
+  var article_neg_adj= {};
+
+  /* 疏理內文分類比重 */
+  var inner =  {kmt:0,dpp:0,pfp:0};
+
+  /* 疏理正負面詞比重 */
+  var pn = {pos:0,neg:0};
+
+  var type ='';
+
+  for(e in article){
+    var o = article[e].split(':');
+    var i = o[0];
+    var j = o[1];
+    switch(j){
+      case 'pos':
+        pn[j]++;
+        type ='pos-adj';  
+        break;
+      case 'neg':
+        pn[j]++;
+        type ='neg-adj';  
+        break;
+      case 'kmt':
+      case 'dpp':
+      case 'pfp':
+        inner[j]++;
+        type ='noun';  
+        break;
+      default:
+        continue;
+    }
+
+    if(type=='noun'){
+      if(!article_noun[i]){
+        article_noun[i] = 1;
+      }else{
+        article_noun[i]++;
+      }
+    }
+    else if(type=='pos-adj'){
+      if(!article_pos_adj[i]){
+        article_pos_adj[i] = 1;
+      }else{
+        article_pos_adj[i]++;
+      }
+    }
+    else if(type=='neg-adj'){
+      if(!article_neg_adj[i]){
+        article_neg_adj[i] = 1;
+      }else{
+        article_neg_adj[i]++;
+      }
+    }
+  }
+
+  /* 沒有管理同義詞 */
+  /* 沒有智慧和訓練可言，若認真一點可以架一個 bp rnn */
+  var point = (pn.pos >= pn.neg) ? 1 : -1;
+  var highest_cat = '';
+  var highest_cnt= 0;
+  for(cat in inner){
+    if(inner[cat]>highest_cnt)
+    {
+      highest_cnt = inner[cat];
+      highest_cat = cat;
+    }
+  }
+
+  console.log('名詞出現次數:');
+  console.log(article_noun);
+  console.log('正面形容詞出現次數:');
+  console.log(article_pos_adj);
+  console.log('負面形容詞出現次數:');
+  console.log(article_neg_adj);
+  console.log('正負面評分:');
+  console.log('此文章主要在講'+highest_cat+'，分數是'+point*highest_cnt);
+  console.log();
+}
+
+/* 頁面分析 */
 
 var repo = {};
 var cnt = {kmt:0,dpp:0,uni:0};
 
 var merge = function(obj){
-
-
   /* 這裹開始改變數名都比較懶了，應該修正到更易讀 */
 
    /* 疏理內文分類比重 */
@@ -144,9 +242,11 @@ var merge = function(obj){
    /* 當所有異步工作完成，才把結算印出 */
 
 process.on('exit',function(){
-  console.log('名詞出現次數:');
-  console.log(repo);
-  console.log('正負面評分:');
-  console.log(cnt);
-  process.exit();
+  if(crawltype=='page'){
+    console.log('名詞出現次數:');
+    console.log(repo);
+    console.log('正負面評分:');
+    console.log(cnt);
+    process.exit();
+  }
 })
