@@ -4,12 +4,17 @@
 國民黨 3 kmt
 執政政府 3 kmt
 王如玄 3 kmt
+如玄 3 kmt
 陳建仁 3 dpp
 蔡英文 3 dpp
 小英 3 dpp
 朱立倫 3 kmt
+朱 3 kmt
+吳育昇 3 kmt
 民進黨 3 dpp
+林佳龍 3 dpp
 宋楚瑜 3 pfp
+老宋 3 pfp
 親民黨 3 pfp
 熱鬧 1 pos
 好 1 pos
