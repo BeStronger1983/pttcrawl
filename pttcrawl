@@ -11,31 +11,33 @@ var tokenizor = require("nodejieba");
 tokenizor.load({dict:'./dict.txt'});
 
 var delay = 0;
-var board = arg[0] || 'politics';
-var crawltype = arg[1]; // page, article
+var board = arg[1] || 'politics';
+var crawltype = arg[0]; // page, article, link
 
-/* 導入部份，按參數 1 指定看板，從 index 知道最後一頁的頁數，這裹沒有做足夠的防誤。 */
 
-request({url:target+board+'/',headers:req_headers},function(e,r,html){
- if(!e && r.statusCode == 200) {
 
-  var $ = cheerio.load(html);
-  /* get link of last - 1 page as in index.html */
-  var lastpage = $('.btn-group.pull-right a')[1].attribs.href;
+if(crawltype == 'page' || crawltype == 'article'){
+  /* 導入部份，按參數 1 指定看板，從 index 知道最後一頁的頁數，這裹沒有做足夠的防誤。 */
+  request({url:target+board+'/',headers:req_headers},function(e,r,html){
+    if(!e && r.statusCode == 200) {
+      var $ = cheerio.load(html);
+      /* get link of last - 1 page as in index.html */
+      var lastpage = $('.btn-group.pull-right a')[1].attribs.href;
 
-  /* cut the number part and get lastpage number */
-  var lastpage_no = parseInt(/(\d)+\.html$/.exec(lastpage)[0],10) + 1;
-  //console.log(lastpage_no);
+      /* cut the number part and get lastpage number */
+      var lastpage_no = parseInt(/(\d)+\.html$/.exec(lastpage)[0],10) + 1;
+      //console.log(lastpage_no);
 
- }else console.log(e,r.statusCode);
+      }else console.log(e,r.statusCode);
 
- var MaxPage = arg[2] || 10;
- if(MaxPage > lastpage_no) MaxPage = lastpage;
- for(page=lastpage_no;page>lastpage_no-MaxPage;page--){
-   get_links(page);
- }
+    var MaxPage = arg[2] || 10;
+    if(MaxPage > lastpage_no) MaxPage = lastpage;
+    for(page=lastpage_no;page>lastpage_no-MaxPage;page--){
+      get_links(page);
+    }
+  });
+}
 
-});
 
 /* 疏理文章的連結。即是在爬... 而且沒有理會 推薦數、板主保留(M)等資料
    留意這裹用了不可靠的順序比較去除掉置底文。 */
@@ -52,7 +54,7 @@ var get_links = function(page){
       curlink = href;
 
       /* 跑太快的話，會出現 503 代表 ptt web 伺服器吃不消在哭哭，不要欺負人啦。 */
-      setTimeout(function(){get_context(href);},delay*100);
+      setTimeout(function(){get_context(target+href);},delay*100);
       delay++;
     })
   }else console.log('pageError',e,r.statusCode,page);
@@ -66,10 +68,9 @@ var get_links = function(page){
 
 
 var get_context = function(link){
-  
-  request({url:target+link,headers:req_headers},function(e,r,html){
+  request({url:link,headers:req_headers},function(e,r,html){
     if(!e && r.statusCode == 200){
-      //console.log(target+link);
+      //console.log(link);
         var main_text = "";
         var $ = cheerio.load(html);
         var children = $('#main-content')[0].children;
@@ -84,13 +85,17 @@ var get_context = function(link){
         }
 
         if(main_text){
-          console.log(target+link);
+          console.log(link);
           analysis(main_text);
         }else{
-          console.log('notext'+target+link);
+          console.log('notext'+link);
         }
     }else console.log('pageError',e,r.statusCode,link);
   })
+}
+
+if(crawltype == 'link'){
+  get_context(arg[1]);
 }
 
 /* 拆詞 */
@@ -101,7 +106,7 @@ var analysis = function(text){
   if(crawltype=='page'){
     merge(result);
   }
-  else if(crawltype=='article'){
+  else if(crawltype=='article' || crawltype=='link'){
     analysize_article(result);
   }
 }

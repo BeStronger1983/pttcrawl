@@ -16,8 +16,9 @@
  - 安裝 nodejs , 參考 https://nodejs.org/
  - git clone https://github.com/BeStronger1983/pttcrawl
  - npm install
- - 分析多頁文章： ./pttcrawl politics page 1
- - 分析單篇文章： ./pttcrawl politics article 1 
+ - 分析多頁文章： ./pttcrawl page politic 1
+ - 分析單篇文章： ./pttcrawl article politics 1 
+ - 分析單篇文章連結： ./pttcrawl link https://www.ptt.cc/bbs/HatePolitics/M.1451878705.A.C6C.html
  - politics 是看板名， 1 代表只取 1 頁，不要太貪心啊！
 
 ## 結果
