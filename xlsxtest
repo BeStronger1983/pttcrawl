@@ -1,0 +1,34 @@
+#!/usr/local/bin/node
+
+var XLSX = require('xlsx');
+ 
+var workbook = XLSX.readFile('ptt.xlsx');
+
+var first_sheet_name = workbook.SheetNames[0];
+var address_of_cell = 'A1';
+
+console.log("first_sheet_name: "+first_sheet_name);
+ 
+/* Get worksheet */
+var worksheet = workbook.Sheets[first_sheet_name];
+ 
+/* Find desired cell */
+var desired_cell = worksheet[address_of_cell];
+
+console.log(desired_cell);
+ 
+/* Get the value */
+var desired_value = desired_cell.v;
+
+console.log("desired_value: "+desired_value);
+
+
+desired_cell.w = undefined;
+desired_cell.v = "測試中";
+
+
+console.log(desired_cell);
+
+XLSX.writeFile(workbook, 'out.xlsx');
+
+ 

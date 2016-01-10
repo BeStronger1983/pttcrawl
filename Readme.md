@@ -20,6 +20,7 @@
  - 分析單篇文章： ./pttcrawl article politics 1 
  - 分析單篇文章連結： ./pttcrawl link https://www.ptt.cc/bbs/HatePolitics/M.1451878705.A.C6C.html
  - politics 是看板名， 1 代表只取 1 頁，不要太貪心啊！
+ - 測試xlsx讀寫功能： ./xlsxtest
 
 ## 結果
  - 印出來的是 json 
@@ -37,3 +38,6 @@
  - 想知道點英詞世界的 NLP 基本邏輯，看 
  - https://zh-tw.coursera.org/course/nlp
  - https://zh-tw.coursera.org/course/nlangp
+
+## Change log
+ - 20160110：測試xlsx讀寫功能

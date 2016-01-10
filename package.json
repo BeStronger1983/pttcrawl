@@ -5,7 +5,7 @@
   "main": "./pttcrawl politics 1",
   "repository": {
     "type": "git",
-    "url": "https://github.com/bencrox/pttcrawl"
+    "url": "https://github.com/BeStronger1983/pttcrawl"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -14,11 +14,12 @@
     "crawl",
     "pttbbs"
   ],
-  "author": "BenCrox <lxb@hkday.net>",
+  "author": "ponpon <wizardsoloist1983@wizardsoloist1983@gmail.com>",
   "dependencies": {
     "cheerio":"~0.19.0",
     "nodejieba":"~1.4.5",
-    "request":"~2.67.0"
+    "request":"~2.67.0",
+    "xlsx":"~2.0.0"
   },
   "license": "ISC"
 }
