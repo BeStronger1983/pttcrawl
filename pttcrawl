@@ -14,6 +14,20 @@ var delay = 0;
 var board = arg[1] || 'politics';
 var crawltype = arg[0]; // page, article, link
 
+var XLSX = require('xlsx');
+
+/* 拆詞 */
+
+var analysis = function(text){
+  tokens = tokenizor.tag(text);
+  if(crawltype=='page'){
+    merge(tokens);
+  }
+  else if(crawltype=='article' || crawltype=='link' || crawltype=='xlsx'){
+    return analysize_article(tokens);
+  }
+}
+
 
 
 if(crawltype == 'page' || crawltype == 'article'){
@@ -98,18 +112,7 @@ if(crawltype == 'link'){
   get_context(arg[1]);
 }
 
-/* 拆詞 */
 
-
-var analysis = function(text){
-  result = tokenizor.tag(text);
-  if(crawltype=='page'){
-    merge(result);
-  }
-  else if(crawltype=='article' || crawltype=='link'){
-    analysize_article(result);
-  }
-}
 
 /* 文章分析 */
 
@@ -194,6 +197,17 @@ var analysize_article = function(article){
   console.log('正負面評分:');
   console.log('此文章主要在講'+highest_cat+'，分數是'+point*highest_cnt);
   console.log();
+
+  var result =
+  {
+    'main':highest_cat,
+    'value':point*highest_cnt,
+    'noun':article_noun,
+    'pos':article_pos_adj,
+    'neg':article_neg_adj
+  }
+
+  return result;
 }
 
 /* 頁面分析 */
@@ -243,6 +257,43 @@ var merge = function(obj){
   }
 }
 
+
+if(crawltype == 'xlsx')
+{
+  var workbook = XLSX.readFile('SplitTest2.xlsx');
+  var sheet_name = workbook.SheetNames[1];
+  var worksheet = workbook.Sheets[sheet_name];
+
+  for(i = 2; i <= 50; i++)
+  {
+    var read_cell_name = 'M'+i;
+    var read_cell = worksheet[read_cell_name];
+    var read_cell_value = read_cell.v;
+    var result = analysis(read_cell_value);
+
+    var main_cell_name = 'Q'+i;
+    var main_cell = worksheet[main_cell_name];
+    main_cell.v = result.main;
+
+    var value_cell_name = 'R'+i;
+    var value_cell = worksheet[value_cell_name];
+    value_cell.v = result.value;
+
+    var noun_cell_name = 'S'+i;
+    var noun_cell = worksheet[noun_cell_name];
+    noun_cell.v = JSON.stringify(result.noun)
+
+    var pos_cell_name = 'T'+i;
+    var pos_cell = worksheet[pos_cell_name];
+    pos_cell.v = JSON.stringify(result.pos);
+
+    var neg_cell_name = 'U'+i;
+    var neg_cell = worksheet[neg_cell_name];
+    neg_cell.v = JSON.stringify(result.neg);
+  }
+
+  XLSX.writeFile(workbook, 'out.xlsx');
+}
 
    /* 當所有異步工作完成，才把結算印出 */
 

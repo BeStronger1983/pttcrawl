@@ -21,6 +21,7 @@
  - 分析單篇文章連結： ./pttcrawl link https://www.ptt.cc/bbs/HatePolitics/M.1451878705.A.C6C.html
  - politics 是看板名， 1 代表只取 1 頁，不要太貪心啊！
  - 測試xlsx讀寫功能： ./xlsxtest
+ - 分析xlsx： ./pttcrawl xlsx
 
 ## 結果
  - 印出來的是 json 
@@ -41,3 +42,4 @@
 
 ## Change log
  - 20160110：測試xlsx讀寫功能
+ - 20160117：新增分析xlsx的功能，會讀SplitText2.xlsx的工作表2的M2到M50格，產出out.xlsx的工作表2的QRSTU欄
