@@ -23,12 +23,11 @@ var analysis = function(text){
   if(crawltype=='page'){
     merge(tokens);
   }
-  else if(crawltype=='article' || crawltype=='link' || crawltype=='xlsx'){
+  else
+  {
     return analysize_article(tokens);
   }
 }
-
-
 
 if(crawltype == 'page' || crawltype == 'article'){
   /* 導入部份，按參數 1 指定看板，從 index 知道最後一頁的頁數，這裹沒有做足夠的防誤。 */
@@ -293,6 +292,12 @@ if(crawltype == 'xlsx')
   }
 
   XLSX.writeFile(workbook, 'out.xlsx');
+}
+
+if(crawltype == 'text')
+{
+  var data = arg[1];
+  analysis(data);
 }
 
    /* 當所有異步工作完成，才把結算印出 */
