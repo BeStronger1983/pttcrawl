@@ -267,6 +267,13 @@ if(crawltype == 'xlsx')
   {
     var read_cell_name = 'M'+i;
     var read_cell = worksheet[read_cell_name];
+
+    if( read_cell === undefined )
+    {
+      // 如果沒資料就跳過
+      continue;
+    }
+    
     var read_cell_value = read_cell.v;
     var result = analysis(read_cell_value);
 
