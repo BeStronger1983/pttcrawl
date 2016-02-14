@@ -256,6 +256,20 @@ var merge = function(obj){
   }
 }
 
+// 依指定值產生一個xlsx的cell
+var create_cell = function(value)
+{
+  var result =
+  {
+    't':"s",
+    'v':JSON.stringify(value),
+    'r':JSON.stringify(value),
+    'h':JSON.stringify(value),
+    'w':JSON.stringify(value)
+  };
+
+  return result;
+}
 
 if(crawltype == 'xlsx')
 {
@@ -273,29 +287,28 @@ if(crawltype == 'xlsx')
       // 如果沒資料就跳過
       continue;
     }
-    
+    else
+    {
+      console.log(JSON.stringify(read_cell));
+    }
+
     var read_cell_value = read_cell.v;
     var result = analysis(read_cell_value);
 
     var main_cell_name = 'Q'+i;
-    var main_cell = worksheet[main_cell_name];
-    main_cell.v = result.main;
+    worksheet[main_cell_name] = create_cell(result.main);
 
     var value_cell_name = 'R'+i;
-    var value_cell = worksheet[value_cell_name];
-    value_cell.v = result.value;
+    worksheet[value_cell_name] = create_cell(result.value);
 
     var noun_cell_name = 'S'+i;
-    var noun_cell = worksheet[noun_cell_name];
-    noun_cell.v = JSON.stringify(result.noun)
+    worksheet[noun_cell_name] = create_cell(result.noun);
 
     var pos_cell_name = 'T'+i;
-    var pos_cell = worksheet[pos_cell_name];
-    pos_cell.v = JSON.stringify(result.pos);
+    worksheet[pos_cell_name] = create_cell(result.pos);
 
     var neg_cell_name = 'U'+i;
-    var neg_cell = worksheet[neg_cell_name];
-    neg_cell.v = JSON.stringify(result.neg);
+    worksheet[neg_cell_name] = create_cell(result.neg);
   }
 
   XLSX.writeFile(workbook, 'out.xlsx');
