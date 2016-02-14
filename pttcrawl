@@ -16,6 +16,8 @@ var crawltype = arg[0]; // page, article, link
 
 var XLSX = require('xlsx');
 
+var keyword = "馬英九";
+
 /* 拆詞 */
 
 var analysis = function(text){
@@ -334,6 +336,17 @@ if(crawltype == 'xlsx')
     }
 
     var read_cell_value = read_cell.v;
+
+    // 有設定關鍵字
+    if( "" != keyword )
+    {
+      // 有找到關鍵字才處理
+      if( -1 == read_cell_value.indexOf(keyword))
+      {
+        continue;
+      }
+    }
+    
     var result = analysis(read_cell_value);
 
     var main_cell_name = 'Q'+i;
