@@ -271,6 +271,47 @@ var create_cell = function(value)
   return result;
 }
 
+// 把 object 轉成 array
+var object_to_array = function(input_object)
+{
+  var output_array = [];
+  //console.log("input_object",JSON.stringify(input_object));
+
+  // 用這種寫法可以把object中所有的屬性遍歷一遍
+  for (var pro in input_object)
+  {
+    //console.log("pro:",pro);
+    //console.log("input_object[pro]",input_object[pro]);
+    output_array.push([pro, input_object[pro]]);
+  }
+
+  return output_array;
+}
+
+// 把 array 轉成 object
+var array_to_object = function(input_array)
+{
+  var output_object = {};
+
+  for (var ele in input_array)
+  {
+    //console.log(JSON.stringify(input_array[ele][1]));
+    output_object[input_array[ele][0]] = input_array[ele][1];
+  }
+
+  return output_object;
+}
+
+var an_array = [];
+// 把一個 object 轉成 array，排序後再轉回 object
+var sort_object = function(input)
+{
+  an_array = object_to_array(input);
+  an_array.sort(function(a, b) {return b[1] - a[1]});
+
+  return array_to_object(an_array);
+}
+
 if(crawltype == 'xlsx')
 {
   var workbook = XLSX.readFile('SplitTest2.xlsx');
@@ -302,13 +343,13 @@ if(crawltype == 'xlsx')
     worksheet[value_cell_name] = create_cell(result.value);
 
     var noun_cell_name = 'S'+i;
-    worksheet[noun_cell_name] = create_cell(result.noun);
+    worksheet[noun_cell_name] = create_cell(sort_object(result.noun));
 
     var pos_cell_name = 'T'+i;
-    worksheet[pos_cell_name] = create_cell(result.pos);
+    worksheet[pos_cell_name] = create_cell(sort_object(result.pos));
 
     var neg_cell_name = 'U'+i;
-    worksheet[neg_cell_name] = create_cell(result.neg);
+    worksheet[neg_cell_name] = create_cell(sort_object(result.neg));
   }
 
   XLSX.writeFile(workbook, 'out.xlsx');
@@ -320,7 +361,8 @@ if(crawltype == 'text')
   analysis(data);
 }
 
-   /* 當所有異步工作完成，才把結算印出 */
+
+/* 當所有異步工作完成，才把結算印出 */
 
 process.on('exit',function(){
   if(crawltype=='page'){
