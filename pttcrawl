@@ -16,7 +16,7 @@ var crawltype = arg[0]; // page, article, link
 
 var XLSX = require('xlsx');
 
-var keyword = "馬英九";
+var keyword = "";
 
 /* 拆詞 */
 
@@ -178,14 +178,19 @@ var analysize_article = function(article){
 
   /* 沒有管理同義詞 */
   /* 沒有智慧和訓練可言，若認真一點可以架一個 bp rnn */
-  var point = (pn.pos >= pn.neg) ? 1 : -1;
+
+  // 正負向程度 = pos次數 減 neg次數
+  var point = pn.pos - pn.neg;
+
   var highest_cat = '';
   var highest_cnt= 0;
+
+  // 找出最高次數的分類
   for(cat in inner){
     if(inner[cat]>highest_cnt)
     {
-      highest_cnt = inner[cat];
-      highest_cat = cat;
+      highest_cnt = inner[cat]; //最高次數
+      highest_cat = cat; //最高次數的分類名稱，也就是主角名稱
     }
   }
 
@@ -196,13 +201,14 @@ var analysize_article = function(article){
   console.log('負面形容詞出現次數:');
   console.log(article_neg_adj);
   console.log('正負面評分:');
-  console.log('此文章主要在講'+highest_cat+'，分數是'+point*highest_cnt);
+  console.log('此文章主要在講'+highest_cat+'，分數是'+point);
   console.log();
 
   var result =
   {
     'main':highest_cat,
-    'value':point*highest_cnt,
+    'maincount':highest_cnt,
+    'value':point,
     'noun':article_noun,
     'pos':article_pos_adj,
     'neg':article_neg_adj
@@ -317,12 +323,12 @@ var sort_object = function(input)
 if(crawltype == 'xlsx')
 {
   var workbook = XLSX.readFile('SplitTest2.xlsx');
-  var sheet_name = workbook.SheetNames[1];
+  var sheet_name = workbook.SheetNames[0];
   var worksheet = workbook.Sheets[sheet_name];
 
-  for(i = 2; i <= 50; i++)
+  for(i = 2; i <= 51; i++)
   {
-    var read_cell_name = 'M'+i;
+    var read_cell_name = 'I'+i;
     var read_cell = worksheet[read_cell_name];
 
     if( read_cell === undefined )
@@ -349,19 +355,22 @@ if(crawltype == 'xlsx')
     
     var result = analysis(read_cell_value);
 
-    var main_cell_name = 'Q'+i;
+    var main_cell_name = 'L'+i;
     worksheet[main_cell_name] = create_cell(result.main);
 
-    var value_cell_name = 'R'+i;
+    var maincount_cell_name = 'M'+i;
+    worksheet[maincount_cell_name] = create_cell(result.maincount);
+
+    var value_cell_name = 'N'+i;
     worksheet[value_cell_name] = create_cell(result.value);
 
-    var noun_cell_name = 'S'+i;
+    var noun_cell_name = 'O'+i;
     worksheet[noun_cell_name] = create_cell(sort_object(result.noun));
 
-    var pos_cell_name = 'T'+i;
+    var pos_cell_name = 'P'+i;
     worksheet[pos_cell_name] = create_cell(sort_object(result.pos));
 
-    var neg_cell_name = 'U'+i;
+    var neg_cell_name = 'Q'+i;
     worksheet[neg_cell_name] = create_cell(sort_object(result.neg));
   }
 
