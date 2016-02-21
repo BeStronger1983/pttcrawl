@@ -355,23 +355,126 @@ if(crawltype == 'xlsx')
     
     var result = analysis(read_cell_value);
 
+    //自動主角
     var main_cell_name = 'L'+i;
     worksheet[main_cell_name] = create_cell(result.main);
 
+    //主角出現次數
     var maincount_cell_name = 'M'+i;
     worksheet[maincount_cell_name] = create_cell(result.maincount);
 
+    //正負向程度
     var value_cell_name = 'N'+i;
     worksheet[value_cell_name] = create_cell(result.value);
 
+    //主要名詞全
     var noun_cell_name = 'O'+i;
     worksheet[noun_cell_name] = create_cell(sort_object(result.noun));
 
-    var pos_cell_name = 'P'+i;
+    var count = 1;
+    var cell_name_name = "";
+    var cell_name_value = "";
+
+    // 主要名詞n，及其次數
+    // 只顯示最多四個名詞及其分數
+    // 用這種寫法可以把object中所有的屬性遍歷一遍
+    count = 1;
+    for (var pro in result.noun)
+    {
+      if( 1 == count )
+      {
+        cell_name_name = 'P'+i;
+        cell_name_value = 'Q'+i;
+      }
+      else if( 2 == count )
+      {
+        cell_name_name = 'R'+i;
+        cell_name_value = 'S'+i;
+      }
+      else if( 3 == count )
+      {
+        cell_name_name = 'T'+i;
+        cell_name_value = 'U'+i;
+      }
+      else if( 4 == count )
+      {
+        cell_name_name = 'V'+i;
+        cell_name_value = 'W'+i;
+      }
+      worksheet[cell_name_name] = create_cell(pro);
+      worksheet[cell_name_value] = create_cell(result.noun[pro]);
+      count++;
+    }
+
+    //正面形容詞全
+    var pos_cell_name = 'X'+i;
     worksheet[pos_cell_name] = create_cell(sort_object(result.pos));
 
-    var neg_cell_name = 'Q'+i;
+    // 正面形容詞n，及其次數
+    // 只顯示最多四個形容詞及其分數
+    // 用這種寫法可以把object中所有的屬性遍歷一遍
+    count = 1;
+    for (var pro in result.pos)
+    {
+      if( 1 == count )
+      {
+        cell_name_name = 'Y'+i;
+        cell_name_value = 'Z'+i;
+      }
+      else if( 2 == count )
+      {
+        cell_name_name = 'AA'+i;
+        cell_name_value = 'AB'+i;
+      }
+      else if( 3 == count )
+      {
+        cell_name_name = 'AC'+i;
+        cell_name_value = 'AD'+i;
+      }
+      else if( 4 == count )
+      {
+        cell_name_name = 'AE'+i;
+        cell_name_value = 'AF'+i;
+      }
+      worksheet[cell_name_name] = create_cell(pro);
+      worksheet[cell_name_value] = create_cell(result.pos[pro]);
+      count++;
+    }
+
+    //負面形容詞全
+    var neg_cell_name = 'AG'+i;
     worksheet[neg_cell_name] = create_cell(sort_object(result.neg));
+
+    // 負面形容詞n，及其次數
+    // 只顯示最多四個形容詞及其分數
+    // 用這種寫法可以把object中所有的屬性遍歷一遍
+    count = 1;
+    for (var pro in result.neg)
+    {
+      if( 1 == count )
+      {
+        cell_name_name = 'AH'+i;
+        cell_name_value = 'AI'+i;
+      }
+      else if( 2 == count )
+      {
+        cell_name_name = 'AJ'+i;
+        cell_name_value = 'AK'+i;
+      }
+      else if( 3 == count )
+      {
+        cell_name_name = 'AL'+i;
+        cell_name_value = 'AM'+i;
+      }
+      else if( 4 == count )
+      {
+        cell_name_name = 'AN'+i;
+        cell_name_value = 'AO'+i;
+      }
+      worksheet[cell_name_name] = create_cell(pro);
+      worksheet[cell_name_value] = create_cell(result.neg[pro]);
+      count++;
+    }
   }
 
   XLSX.writeFile(workbook, 'out.xlsx');
